@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+from activities_python.common.use_cases.server import ServerUseCase
+
+ServerUseCase().execute()
+

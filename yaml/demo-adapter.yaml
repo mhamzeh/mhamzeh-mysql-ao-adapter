@@ -1,0 +1,91 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-adapter
+  labels:
+    name: demo-adapter
+spec:
+  type: ClusterIP
+  ports:
+  - name: python-svc-port
+    port: 8082
+    targetPort: demo-adapter
+    protocol: TCP
+  selector:
+    # This needs to match the selector in the Deployment
+    app: demo-adapter
+
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: demo-adapter-tls
+spec:
+  secretName: demo-adapter-tls
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+  commonName: demo-adapter
+  dnsNames:
+  - demo-adapter
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: demo-adapter
+  labels:
+    app: demo-adapter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-adapter
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      name: demo-adapter
+      labels:
+        app: demo-adapter
+    spec:
+      containers:
+      - name: demo-adapter
+        image: demo-adapter:latest
+        ports:
+        - name: demo-adapter
+          containerPort: 8082
+          protocol: TCP
+        imagePullPolicy: Never
+        securityContext:
+          privileged: false
+        volumeMounts:
+            - name: demo-adapter-tls
+              mountPath: /secrets/ssl/cert
+              readOnly: true
+            - name: ca-key-pair
+              mountPath: /secrets/ssl/ca
+              readOnly: true
+      volumes:
+        - name: demo-adapter-tls
+          secret:
+            secretName: demo-adapter-tls
+            items:
+              - key: tls.crt
+                path: certificate.pem
+              - key: tls.key
+                path: private_key.pem
+        - name: ca-key-pair
+          secret:
+            secretName: ca-key-pair
+            items:
+            - key: tls.crt
+              path: ca_certificate.pem
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      schedulerName: default-scheduler

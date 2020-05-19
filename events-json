@@ -1,0 +1,61 @@
+All these requests are samples of what payload coming to adapter may look like
+
+{
+    "type": "activity.hello_world",
+    "config": {
+       "input_one": "Hello ",
+       "input_two": "World!!!"
+    }
+}
+
+{
+    "type": "activity.run_script",
+    "config": {
+       "action_timeout": 5,
+       "script_arguments":["World"],
+       "script_queries": [{"script_query":"b","script_query_name":"b","script_query_type":"string"},{"script_query":"c","script_query_name":"c","script_query_type":"string"}],
+       "script": "import time,sys\nc = (sys.argv[1])\ntime.sleep(1)\nb=\"Hello\"\nprint(\"Hello world\")"
+    }
+}
+
+{
+    "type": "activity.create_template",
+    "config": {
+        "no_proxy": false,
+        "template_name":"T123",
+        "host": "n180.template.com",
+        "username": "alex",
+        "password": "123456",
+        "protocol": "http",
+        "port": 8081
+     },
+    "lh_options": {
+        "proxy_options": {
+    	    "http_proxy": {
+	    	    "url": "http://proxy.com:3128",
+	    	    "username":"proxyclient",
+	    	    "password":"proxypassword"
+    		},
+    		"https_proxy": {
+	    		"url": "http://proxy.com:3128",
+	    	    "username":"proxyclient",
+	    	    "password":"proxypassword"
+    		},
+    		"bypass_list":"*.template.com,domain.com"
+    	},
+    	"secure_keys": [ "password"]
+	}
+}
+
+{
+    "type": "target.endpoint",
+    "config": {
+        "no_proxy": false,
+        "host": "google.com",
+        "key": "f9de4fb146aec170292a71e70d20df7c9fe38f81",
+        "username": "alex",
+        "password": "123456",
+        "protocol": "http",
+        "port": 80
+    }
+}

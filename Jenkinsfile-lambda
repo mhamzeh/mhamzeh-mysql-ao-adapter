@@ -1,0 +1,12 @@
+#!/usr/bin/env groovy
+
+@Library('longhorn-shared-library') _
+
+
+lambdaPipeline {
+    functionName = 'template'
+    checkoutDir = 'src/bitbucket-eng-sjc1.cisco.com/bitbucket/nextg/activities-template'
+    handler = 'handler.python_activities_handler'
+    runtime = 'python2.7'
+}
+
